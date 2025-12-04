@@ -1,0 +1,24 @@
+# CodeRabbit configuration file
+# See https://docs.coderabbit.ai/guides/configure-coderabbit
+
+reviews:
+  # Enable auto-reviews for all branches (not just default branch)
+  auto_review:
+    enabled: true
+    # Review all pull requests, regardless of target branch
+    base_branches:
+      - ".*"
+
+  # Review profile: assertive (more feedback) or chill (less feedback)
+  profile: assertive
+
+  # Post review status as a check
+  review_status: true
+
+# Knowledge base: Project-specific guidelines
+knowledge_base:
+  code_guidelines:
+    enabled: true
+    filePatterns:
+      - "docs/development/quality-guide.md"
+      - "docs/development/testing-guide.md"
