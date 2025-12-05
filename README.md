@@ -1,74 +1,165 @@
-# Project Template
+# multi-llm-deep-research
 
-This is a standardized project template optimized for development with Claude Code and CodeRabbit.
+A reproducible research pipeline.
+— Source code only. Inputs & outputs live outside this repository.
 
-## How to Use This Template
+## What is this?
 
-### Starting a New Project
+**multi-llm-deep-research** is an OSS project that codifies a **reproducible, general-purpose research pipeline** leveraging multiple LLMs in parallel:
 
-1. Copy this template to your new project directory:
-   ```bash
-   cp -r ~/dev/project-templates/* ~/dev/your-new-project/
-   cd ~/dev/your-new-project
-   ```
+> Primary Research → Cross-Model Diff → Meta-Review → Final Insight Synthesis
 
-2. Initialize git repository:
-   ```bash
-   git init
-   git branch -m main
-   git commit --allow-empty -m "Project start"
-   ```
+This repository contains **only executable code and templates**. Specific research requests (inputs) and LLM outputs (results) are stored **locally on your machine**.
 
-3. Customize project-specific files:
-   - Update `README.md` (replace this template guide with project description)
-   - Update `CLAUDE.md` (project name, specific rules)
-   - Update `docs/project-overview.md` (purpose, tech stack)
+The goal is to **structure traditional manual deep research** into a form that anyone can reproduce.
 
-4. Set up GitHub repository (if using GitHub):
-   ```bash
-   gh repo create your-repo-name --public --source=. --remote=origin
-   git push -u origin main
-   ```
+## Why Multi-LLM Research?
 
-5. Install CodeRabbit GitHub App (if using GitHub):
-   - Visit https://github.com/apps/coderabbitai
-   - Install for your repository
+A single model alone cannot avoid certain limitations:
 
-## What's Included
+- **Perspective bias**
+- **Hallucinations**
+- **Incorrect assumptions**
+- **Lack of up-to-date information**
+- **Weak evidence**
 
-### Core Files
-- `CLAUDE.md` - Claude Code project context and workflow
-- `.coderabbit.yaml` - CodeRabbit configuration
-- `.gitignore` - Standard ignore patterns
+To address these, this project **uses LLMs with different strengths in parallel** and treats **cross-model differences and contradictions as sources of insight**.
 
-### Documentation Structure
-- `docs/` - Complete documentation (see `docs/README.md` for full structure)
-  - Project overview, daily logs, plans
-  - Development guides (CodeRabbit, quality, testing)
+### Models Used
 
-## Development Workflow
+| Model | Strength |
+|-------|----------|
+| GPT | Logic, structure, final synthesis (chair role) |
+| Claude | Critical thinking, assumption testing, depth of insight |
+| Gemini | Latest web news, tech blogs, search-based research |
+| Perplexity | Academic papers, cited research, evidence collection |
+| Grok/X | Social narratives, public opinion, cultural context analysis |
 
-This template uses an incremental development approach optimized for Claude Code:
+## Repository Structure
 
-- Plan before implementation (`docs/plans/`)
-- Small iterations with frequent reviews (20-30 lines at a time)
-- CodeRabbit review at each step
-- Document progress in daily logs (`docs/daily-logs/`)
+This repository contains **only executable code and templates**.
+All research inputs and outputs are stored **outside the repository**.
 
-See `CLAUDE.md` for complete workflow details.
+```
+multi-llm-deep-research/
+├── src/
+│   └── mldr/
+│       ├── core/
+│       │   ├── pipeline.py      # Stage 1–3 pipeline orchestration
+│       │   ├── llm_clients.py   # LLM provider abstraction
+│       │   ├── prompts.py       # Prompt builders for each stage
+│       │   └── config.py        # Configuration (model selection, timeouts)
+│       ├── cli/
+│       │   └── main.py          # CLI entry point
+│       └── __init__.py
+├── templates/
+│   ├── research-request.md      # Research specification template
+│   ├── meta-review.md           # Structural + interpretive meta-review template
+│   └── final-report.md          # Final report template
+├── docs/
+│   ├── project-overview.md      # Project purpose, goals, tech stack
+│   └── architecture.md          # Module responsibilities, data flow, interfaces
+├── pyproject.toml
+└── README.md
+```
 
-## Requirements
+## Where Inputs & Outputs Live
 
-- Git installed
-- CodeRabbit CLI installed (`curl -fsSL https://cli.coderabbit.ai/install.sh | sh`)
-- Claude Code access
-- GitHub account (optional, for PR reviews)
+**No research data (inputs or outputs) is stored in this repository.**
 
-## Support
+Instead, create an arbitrary "workspace" on your local machine.
 
-See individual documentation files for detailed guides:
-- Development workflow: `CLAUDE.md`
-- CodeRabbit usage: `docs/development/coderabbit-workflow.md`
-- Quality standards: `docs/development/quality-guide.md`
-- Testing guide: `docs/development/testing-guide.md`
-- Documentation structure: `docs/README.md`
+### Input (research-request.md)
+
+Example:
+```
+~/Documents/mldr/workspace/
+ └── 20250105-mci-care/
+      └── research-request.md
+```
+
+### Output (LLM outputs / meta-review / final-report)
+
+Example:
+```
+~/Documents/mldr/output/
+ └── 20250105-mci-care/
+      ├── gpt.md
+      ├── claude.md
+      ├── gemini.md
+      ├── grok.md
+      ├── perplexity.md
+      ├── meta-review-gpt.md
+      ├── meta-review-claude.md
+      └── final-report.md
+```
+
+## Research Pipeline
+
+### Stage 0 — Research Briefing
+
+Use GPT to structure the research theme and generate an optimal research-request (optional).
+
+### Stage 1 — Parallel Deep Research
+
+Submit the same `research-request.md` to 5 LLMs for primary research.
+
+Each model responds following the structure defined in `templates/research-request.md` (Section 5: Expected Output Structure):
+
+- Key Facts
+- Key Concepts / Entities
+- Context & Drivers
+- Distinguishing Features / Patterns
+- Hypotheses
+- Conflicting Perspectives / Open Questions
+- Evidence & Sources
+- Limitations
+
+### Stage 2 — Meta Review (Diff & Critique)
+
+#### GPT meta-review (structural)
+
+GPT looks across all model reports and focuses on **structural aggregation**:
+
+- Extracts common facts and shared conclusions
+- Identifies conflicting claims between models
+- Scores claims by apparent evidential strength (multi-model support, citations, etc.)
+- Maps which model emphasizes which aspects of the topic
+- Surfaces points that clearly require further clarification or investigation
+
+#### Claude meta-review (interpretive)
+
+Claude takes the structural view (including GPT's meta-review) and focuses on **interpretation and critique**:
+
+- Examines hidden assumptions behind the shared conclusions and conflicts
+- Highlights missing perspectives, stakeholders, and time horizons
+- Identifies business/strategic risks and "directions we probably should not take"
+- Proposes alternative explanations or causal stories that could also fit the observed facts
+
+### Stage 3 — Final Synthesis (GPT as Chair)
+
+GPT integrates all information and outputs:
+
+- **High-confidence facts summary**
+- **Points of contention across models**
+- **Strategic implications**
+- **Priority hypotheses**
+- **Next actions** (research, PoC, interviews, etc.)
+- **Additional sources to review**
+
+## Roadmap
+
+- [x] **v0**: Templates & pipeline specification ← *current*
+- [ ] **v0.5**: CLI tools (`new research` / `run pipeline` / `save output`)
+- [ ] **v1**: Automated meta-review generation and formatting
+- [ ] **v1.5**: Automated final-report generation
+- [ ] **v2**: Research Dashboard (Web UI / history / diff)
+- [ ] **v3**: Multi-agent orchestration layer (LLM-to-LLM chat / role optimization)
+
+## License
+
+MIT License
+
+## Contributing
+
+Pull requests, issues, and feature suggestions are welcome.
