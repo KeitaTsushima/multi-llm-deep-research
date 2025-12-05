@@ -1,7 +1,6 @@
 # YYYY-MM-DD
 
 ## Session Info
-- Duration: [X hours]
 - Branch: [feature/branch-name]
 
 ## What I Did
