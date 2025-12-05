@@ -338,17 +338,27 @@ mldr new research \
 ```bash
 mldr run \
   --request /path/to/research-request.md \
-  --output  /path/to/output-dir
+  --output  /path/to/output-dir \
+  [--models gpt,claude]
 ```
 
 **Behavior:**
 
 - Loads `default_config()`
+- If `--models` is provided, overrides `config.primary_models` with the specified list
 - Calls `run_research(request_path, output_dir, config)`
 - Creates output directory if it does not exist.
 - Fails fast if:
   - `request` does not exist
-  - Required API keys are missing from env (either disable model or error — TBD)
+  - Required API keys are missing for specified models
+
+**Options:**
+
+| Option | Required | Description |
+|--------|----------|-------------|
+| `--request` | Yes | Path to `research-request.md` |
+| `--output` | Yes | Output directory for results |
+| `--models` | No | Comma-separated list of models to use (e.g., `gpt,claude`). Overrides `config.primary_models`. Useful for development and cost control. |
 
 ---
 
@@ -371,11 +381,109 @@ mldr run \
 
 ---
 
-## 5. Roadmap Hooks
+## 5. Design Principles & Version Roadmap
 
-This architecture is intentionally minimal but leaves room for:
+This project intentionally separates **v0.5** (minimal viable pipeline) from **v1.0** (structured, scalable pipeline).
+The goal is to ensure the first version is small, reliable, and easy to validate, while leaving clear extension points for more advanced research workflows.
 
-- Async / concurrent LLM calls in `_run_primary_research`
-- Configurable chairman model (GPT / Gemini / Claude)
+---
+
+### 5.1 v0.5 — Scope & Required Guarantees
+
+v0.5 focuses solely on producing a complete research workflow:
+
+**Core Pipeline**
+- Primary Research → Meta-Review → Final Synthesis
+- Implement Stage 1–3 as defined, with no additional feedback loops.
+
+**Fault Tolerance (Mandatory)**
+- A failure in one model **must not** stop the entire pipeline.
+- `_run_primary_research()` wraps each model call in try/except.
+- Failed models are skipped with warnings and explicitly noted in Meta-Review prompts.
+- Example prompt addition: *"Note: The following models failed and are excluded: [model_list]"*
+
+**Model Selection Flexibility**
+- `config.primary_models` controls which models run.
+- CLI supports `--models` to override this (see Section 3.2).
+- Enables fast testing (e.g., `--models gpt,claude` for development).
+
+**Markdown Output Only**
+- All LLM outputs remain in Markdown following the template structure.
+- No parsing or structured-data extraction is performed in v0.5.
+- Templates should strongly discourage verbose intros or format deviations.
+
+**Full-Context Meta Review**
+- Stage 2 receives full primary outputs (no summarization layer yet).
+- Prompt templates enforce concise, bullet-point style responses.
+
+These are the **only guarantees** required for v0.5 to function reliably.
+
+---
+
+### 5.2 v1.0 — Planned Extensions (Do NOT Implement in v0.5)
+
+The following enhancements are explicitly **out of scope** for v0.5, but the architecture must leave room for them:
+
+**Structured Output (JSON or XML tagging)**
+- Primary model outputs will eventually be parsed into an internal `ModelReport` structure (Pydantic).
+- Markdown will be generated after structured interpretation.
+- Enables programmatic extraction of "Key Facts", "Evidence", etc.
+
+**Map-Reduce Compression Layer (Stage 1.5)**
+- Before Meta-Review, an optional summarization step will extract:
+  - Key claims
+  - Evidence / sources
+  - Contradictions
+- This reduces context window load and improves reasoning stability.
+- Design hook: `_summarize_primary_reports()` function placeholder in pipeline.
+
+**Evidence & Source Extraction**
+- Perplexity/Gemini URLs will be parsed and attached to fact objects.
+- Distinction between "evidence-supported facts" and "model-internal knowledge" will be introduced.
+- v0.5 relies on "Evidence & Sources" section in templates only.
+
+**Critic Loop (Stage 3 → Stage 4)**
+- After Meta-Review, a Critic model can request:
+  - Clarifications
+  - Targeted re-research
+  - Contradictions to investigate
+- Only then a final synthesis is produced.
+- Pipeline stages become: `stage_primary → stage_meta → stage_critic → stage_final`
+
+**Async Execution for Performance**
+- All primary research calls may run with `asyncio` in the future.
+- v0.5 uses synchronous calls for simplicity.
+
+These future features influence design choices, but **must not be implemented now**.
+
+---
+
+### 5.3 Principle Summary
+
+| Version | Focus |
+|---------|-------|
+| **v0.5** | Correctness + Stability + Clarity |
+| **v1.0** | Structure + Scalability + Depth |
+
+The architecture must remain small and robust for v0.5, while clearly marking the seams where v1 features will attach later.
+
+> **Implementation Note (for all contributors and LLMs):**
+> When producing implementation plans or writing code,
+> **strictly follow the v0.5 scope** described in Section 5.1.
+>
+> Items listed under **v1.0 — Planned Extensions** (Section 5.2)
+> are *design constraints only* and **must NOT be implemented** in v0.5.
+>
+> Any implementation plan that includes structured-output parsing,
+> JSON/XML, map-reduce summarization, evidence extraction, critic loops,
+> or async execution is considered **out of scope** and should be rejected.
+
+---
+
+### 5.4 Legacy Roadmap Hooks
+
+This architecture also leaves room for:
+
+- Configurable chairman model (GPT / Gemini / Claude) — already supported via `config.chairman_model`
 - Web dashboard or API layer on top of `run_research()`
 - Optional Stage 0 helper command (`mldr assist request` etc.)
