@@ -46,6 +46,11 @@ Per `docs/architecture.md`:
 - **No streaming**: Batch processing only
 - **No rate limiting**: Handled in v1
 - **No usage tracking**: `LLMResult` contains only `raw_text`
+- **Synchronous only**: `LLMClient.run()` must remain synchronous in v0.5
+
+> **Design Note (Async)**: v1.x will introduce async support via a *separate* interface
+> (e.g., `AsyncLLMClient`). The v0.5 `run()` signature must not be modified.
+> This avoids breaking the v0.5 pipeline while preserving a forward-compatible upgrade path.
 
 ### Dependencies
 
@@ -126,8 +131,11 @@ Per `docs/architecture.md`:
         gemini: ModelConfig = ...
         perplexity: ModelConfig = ...
         grok: ModelConfig = ...
+
+        def get_model_config(self, model_id: ModelId) -> ModelConfig:
+            return getattr(self, model_id)
     ```
-  - Access pattern: `getattr(config, model_id)` (e.g., `config.gpt`, `config.claude`)
+  - Access pattern: `config.get_model_config(model_id)` for type-safe access
 - Why: Foundation for all configuration; named fields ensure type safety and IDE support
 
 ### Step 2: config.py - API key loading
@@ -187,7 +195,7 @@ Per `docs/architecture.md`:
 - Logic:
   - Call `load_api_keys()`
   - For each `model_id` in `config.primary_models`:
-    - Get model config: `model_cfg = getattr(config, model_id)`
+    - Get model config: `model_cfg = config.get_model_config(model_id)`
     - If `model_cfg.enabled is False`: skip
     - If `enabled is True` but API key is missing: **raise exception immediately**
       ```
@@ -200,8 +208,12 @@ Per `docs/architecture.md`:
 
 ### Step 9: Update requirements.txt
 
-- Add: `openai`, `anthropic`
-- Why: SDK dependencies
+- Add with version pins:
+  ```
+  openai>=1.0.0,<2.0.0
+  anthropic>=0.3.0,<1.0.0
+  ```
+- Why: SDK dependencies; pin major versions to avoid SDK breaking changes
 
 ### Step 10: Testing
 
