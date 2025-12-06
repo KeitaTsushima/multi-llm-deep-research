@@ -78,7 +78,10 @@ class Config:
         """
         if not hasattr(self, model_id):
             raise KeyError(f"Unknown model_id: '{model_id}'")
-        return getattr(self, model_id)
+        config = getattr(self, model_id)
+        if not isinstance(config, ModelConfig):
+            raise KeyError(f"Unknown model_id: '{model_id}'")
+        return config
 
 
 def load_api_keys() -> dict[ModelId, str]:
