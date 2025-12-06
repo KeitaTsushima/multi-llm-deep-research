@@ -9,7 +9,7 @@ Implement the configuration layer (`config.py`) and LLM client abstraction (`llm
 This enables the pipeline to:
 1. Load configuration with model settings (model_name, timeout, enabled)
 2. Load API keys securely from environment variables
-3. Call LLMs via unified interface: `client.run(prompt) -> LLMResult`
+3. Call LLMs via unified interface: `client.run(prompt, system) -> LLMResult`
 
 ### Success Criteria (v0.5 Scope)
 
@@ -36,7 +36,7 @@ Per `docs/architecture.md`:
 
 **`llm_clients.py` is responsible for:**
 - `LLMResult` dataclass (`raw_text: str` only for v0.5)
-- `LLMClient` Protocol (`run(prompt: str) -> LLMResult`)
+- `LLMClient` Protocol (`run(prompt: str, system: str | None = None) -> LLMResult`)
 - `build_clients(config: Config) -> dict[ModelId, LLMClient]`
 
 ### v0.5 Scope Constraints
@@ -100,7 +100,7 @@ Per `docs/architecture.md`:
 
 **llm_clients.py:**
 1. `LLMResult` - Response dataclass (`raw_text: str`)
-2. `LLMClient` - Protocol defining `run(prompt: str) -> LLMResult`
+2. `LLMClient` - Protocol defining `run(prompt: str, system: str | None = None) -> LLMResult`
 3. `OpenAIClient` - GPT implementation
 4. `AnthropicClient` - Claude implementation
 5. `build_clients()` - Factory that creates enabled clients
@@ -166,21 +166,28 @@ Per `docs/architecture.md`:
 - Modify: `src/mldr/core/llm_clients.py`
 - Add:
   - `LLMResult` dataclass (`raw_text: str`)
-  - `LLMClient` Protocol (`run(prompt: str) -> LLMResult`)
-- Why: Define interface before implementations
+  - `LLMClient` Protocol:
+    ```python
+    def run(self, prompt: str, system: str | None = None) -> LLMResult: ...
+    ```
+- Why: Define interface before implementations; `system` param allows SDK-native system prompt handling
 
 ### Step 5: llm_clients.py - OpenAIClient
 
 - Add: `OpenAIClient` class
 - Constructor: Takes `api_key`, `model_name`, `timeout_sec`
-- Method: `run(prompt) -> LLMResult` using `openai` SDK
+- Method: `run(prompt, system=None) -> LLMResult` using `openai` SDK
+  - If `system` provided: use as system message
+  - `prompt` becomes user message
 - Why: Required for v0.5
 
 ### Step 6: llm_clients.py - AnthropicClient
 
 - Add: `AnthropicClient` class
 - Constructor: Takes `api_key`, `model_name`, `timeout_sec`
-- Method: `run(prompt) -> LLMResult` using `anthropic` SDK
+- Method: `run(prompt, system=None) -> LLMResult` using `anthropic` SDK
+  - Uses SDK's native `system` parameter
+  - `prompt` becomes user message
 - Why: Required for v0.5
 
 ### Step 7: llm_clients.py - Stub clients
