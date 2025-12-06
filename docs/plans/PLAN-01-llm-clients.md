@@ -13,13 +13,14 @@ This enables the pipeline to:
 
 ### Success Criteria (v0.5 Scope)
 
-- [ ] `config.py`: `ModelId`, `ModelConfig`, `Config`, `load_api_keys()`, `default_config()` implemented
+- [x] `config.py`: `ModelId`, `ModelConfig`, `Config`, `load_api_keys()`, `default_config()` implemented
 - [ ] `llm_clients.py`: `LLMResult`, `LLMClient` Protocol, `build_clients()` implemented
 - [ ] **Required clients**: OpenAIClient (GPT) and AnthropicClient (Claude) fully working
 - [ ] **Optional clients**: Gemini/Perplexity/Grok as stubs (`NotImplementedError`) or `enabled=False`
 - [ ] `build_clients(config)` returns `dict[ModelId, LLMClient]` respecting `enabled` flag
-- [ ] Unit tests passing for GPT and Claude clients
-- [ ] `ruff` / `mypy` pass without errors
+- [x] Unit tests passing for config.py (25 tests)
+- [ ] Unit tests passing for llm_clients.py
+- [x] `ruff` / `mypy` pass without errors
 
 ## Context
 
@@ -268,7 +269,25 @@ Per `docs/architecture.md`:
 
 ## Issues Encountered and Resolved
 
-*(Fill this in during/after implementation)*
+### config.py Implementation (2025-12-06)
+
+1. **timeout_sec default too short**: Initial value of 120s inadequate for deep research
+   - Resolution: Changed to 600s (10 min) based on SDK defaults research
+
+2. **chairman_model validation missing**: No check that chairman is in primary_models
+   - Resolution: Added `__post_init__()` validation
+
+3. **ModelConfig responsibility unclear**: Risk of config bloat with runtime params
+   - Resolution: Added docstring clarifying user-facing vs runtime params separation
+
+4. **ModelId extensibility concern**: Literal type limits future model additions
+   - Resolution: Documented v1.x migration path to Enum/registry pattern
+
+5. **LLMClient.run() missing system param**: SDK-native system prompt handling needed
+   - Resolution: Updated PLAN to include `system: str | None = None` parameter
+
+6. **pyproject.toml missing**: Package not installable for pytest
+   - Resolution: Created pyproject.toml with package config and dev dependencies
 
 ## Future Improvements
 
