@@ -31,7 +31,8 @@ CodeRabbit automatically reviews all pull requests when:
 2. `.coderabbit.yaml` is configured with `auto_review: enabled: true`
 
 If auto-review doesn't trigger, manually trigger with:
-```
+
+```text
 @coderabbitai review
 ```
 
@@ -59,15 +60,18 @@ CodeRabbit PR reviews require branch protection to enforce PR workflow.
 ### Why This Configuration?
 
 **Problem:** Solo projects face a conflict:
+
 - Want main push blocked → PR required
 - Want approval required → Can't approve own PRs
 
 **Solution:**
+
 - Approval required for external contributors
 - Owner bypasses approval (enforce_admins: false)
 - CodeRabbit pass still provides quality gate
 
 **Trade-off:**
+
 - Owner can push directly to main (must self-enforce PR workflow)
 - External PRs require both approval + CodeRabbit pass
 
@@ -98,13 +102,15 @@ EOF
 ### Typical Prompts
 
 **During implementation:**
-```
+
+```text
 [After implementing a function]
 Run CodeRabbit review and fix any issues
 ```
 
 **Verify fixes:**
-```
+
+```text
 Run CodeRabbit again to verify all issues are resolved
 ```
 
@@ -113,17 +119,20 @@ Run CodeRabbit again to verify all issues are resolved
 ## Review Modes
 
 ### --prompt-only (Recommended for Claude Code)
+
 - Token-efficient output
 - Optimized for AI consumption
 - Specific file locations and suggestions
 - Use with Claude Code
 
 ### --plain
+
 - Detailed human-readable output
 - Full feedback with explanations
 - Use for manual review
 
 ### Interactive (default)
+
 - Full UI with browsable findings
 - Not suitable for automation
 
@@ -133,7 +142,7 @@ Run CodeRabbit again to verify all issues are resolved
 
 ### CLI Output Structure
 
-```
+```text
 File: data_processor.py
 Line: 47 to 51
 Type: potential_issue
@@ -146,16 +155,19 @@ function strips a fixed set of characters which is insecure...
 ### PR Output Structure
 
 **Summary by CodeRabbit:**
+
 - High-level overview
 - Walkthrough of changes
 - Changes table
 
 **Review comments:**
+
 - Actionable comments (must fix)
 - Nitpick comments (suggestions)
 - Additional context
 
 **Pre-merge checks:**
+
 - Failed checks (warnings/errors)
 - Passed checks
 

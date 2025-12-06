@@ -58,3 +58,36 @@ Update your PLAN with:
 - **Learnings**: What you'd do differently next time
 
 This makes the PLAN valuable for future reference and blog posts.
+
+## Future Improvements → GitHub Issues
+
+**Rule**: Don't write detailed future improvements in PLAN files. Use GitHub Issues instead.
+
+**Why?**
+- Issues are searchable and filterable
+- Can track status (Open/Closed)
+- Supports discussion and assignment
+- Avoids stale documentation
+
+**Workflow:**
+1. Identify out-of-scope improvement during implementation
+2. Create GitHub Issue with labels (`v1.x`, `enhancement`, `priority:*`)
+3. Add link to PLAN's Future Improvements section
+
+**Example command:**
+```bash
+gh issue create \
+  --title "Add retry logic with exponential backoff" \
+  --body "## Summary\n..." \
+  --label "v1.x,enhancement"
+```
+
+**Labels to use:**
+| Label | Purpose |
+|-------|---------|
+| `v1.x` | Planned for future version |
+| `enhancement` | New feature |
+| `code-quality` | Refactoring/improvement |
+| `priority:medium` | Medium priority |
+| `priority:low` | Low priority |
+| `wontfix` | Won't implement (with reason) |

@@ -291,13 +291,34 @@ Per `docs/architecture.md`:
 
 ## Future Improvements
 
-*(Out of scope for v0.5)*
+*(Out of scope for v0.5 — tracked in GitHub Issues)*
 
-- Gemini client implementation
-- Perplexity client implementation (OpenAI-compatible API)
-- Grok client implementation
-- Rate limit handling
-- Retry logic (exponential backoff)
-- Streaming response support
-- Usage tracking / cost calculation
-- Async execution (`asyncio`)
+All future improvements are tracked in GitHub Issues with label `v1.x`:
+- [View all v1.x issues](https://github.com/KeitaTsushima/multi-llm-deep-research/issues?q=is%3Aissue+is%3Aopen+label%3Av1.x)
+
+### Features
+
+| Issue | Title | Labels |
+|-------|-------|--------|
+| [#9](https://github.com/KeitaTsushima/multi-llm-deep-research/issues/9) | Implement Deep Research API integration | enhancement |
+| [#10](https://github.com/KeitaTsushima/multi-llm-deep-research/issues/10) | Implement additional LLM clients (Gemini, Perplexity, Grok) | enhancement |
+| [#11](https://github.com/KeitaTsushima/multi-llm-deep-research/issues/11) | Add resilience features (rate limiting, retry, async) | enhancement |
+
+### Code Quality
+
+| Issue | Title | Priority |
+|-------|-------|----------|
+| [#2](https://github.com/KeitaTsushima/multi-llm-deep-research/issues/2) | Add py.typed marker for PEP 561 compliance | 🟡 Medium |
+| [#3](https://github.com/KeitaTsushima/multi-llm-deep-research/issues/3) | Refactor get_model_config() to use explicit mapping | 🟡 Medium |
+| [#4](https://github.com/KeitaTsushima/multi-llm-deep-research/issues/4) | Add logging to load_api_keys() for missing keys | 🟡 Medium |
+| [#5](https://github.com/KeitaTsushima/multi-llm-deep-research/issues/5) | Add SecureApiKey wrapper to mask keys in logs | 🟢 Low |
+| [#6](https://github.com/KeitaTsushima/multi-llm-deep-research/issues/6) | Add frozen=True to dataclasses for immutability | 🟢 Low |
+| [#7](https://github.com/KeitaTsushima/multi-llm-deep-research/issues/7) | Add pre-commit hooks for automated linting | 🟢 Low |
+| [#8](https://github.com/KeitaTsushima/multi-llm-deep-research/issues/8) | Add bandit security scanning to CI | 🟢 Low |
+
+### Design Decisions
+
+| Issue | Title |
+|-------|-------|
+| [#12](https://github.com/KeitaTsushima/multi-llm-deep-research/issues/12) | Consider relaxing chairman_model validation |
+| [#13](https://github.com/KeitaTsushima/multi-llm-deep-research/issues/13) | Migrate ModelId from Literal to Enum/registry pattern |

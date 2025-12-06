@@ -90,3 +90,57 @@ For each PR:
 - **XSS**: Sanitize user-generated content in web UIs
 - **Authentication**: Never store passwords in plaintext
 - **Dependencies**: Keep dependencies up to date
+
+---
+
+## 7. Markdown Formatting Rules
+
+These rules ensure consistent Markdown formatting and pass linting tools (markdownlint, CodeRabbit).
+
+### Blank Lines
+
+| Rule | Description | Example |
+|------|-------------|---------|
+| MD022 | Blank line before and after headings | `\n## Heading\n` |
+| MD031 | Blank line before and after code blocks | `\n```python\n...\n```\n` |
+| MD032 | Blank line before and after lists | `\n- item\n- item\n` |
+
+### Other Rules
+
+| Rule | Description |
+|------|-------------|
+| MD040 | Code blocks should specify language | ` ```python ` not ` ``` ` |
+| MD029 | Ordered lists should start at 1 | Restart numbering per section |
+| MD009 | No trailing spaces | Clean up whitespace |
+
+### Quick Reference
+
+```markdown
+# Good Example
+
+## Section Title
+
+Here is some text.
+
+- List item 1
+- List item 2
+
+More text here.
+
+```python
+def example():
+    pass
+```
+
+Final paragraph.
+```
+
+### Bad Examples to Avoid
+
+```markdown
+## No blank line before
+- No blank line before list
+```python
+# No blank line before code block
+```
+```

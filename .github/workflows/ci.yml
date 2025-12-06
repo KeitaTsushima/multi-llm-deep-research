@@ -30,3 +30,7 @@ jobs:
       - name: mypy (type check)
         run: |
           mypy src/mldr
+
+      - name: pytest (unit tests)
+        run: |
+          pytest tests/ -v --tb=short
