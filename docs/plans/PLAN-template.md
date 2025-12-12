@@ -100,7 +100,18 @@
 
 ## Future Improvements
 
-*(Things we identified but are out of scope for now)*
+*(Out of scope items — create GitHub Issues and link here)*
 
-- [Improvement 1]
-- [Improvement 2]
+All future improvements should be tracked as GitHub Issues with appropriate labels.
+
+**How to use:**
+1. Create Issue: `gh issue create --title "..." --body "..." --label "v1.x,enhancement"`
+2. Link here with issue number and title
+
+**Example:**
+| Issue | Title |
+|-------|-------|
+| [#9](link) | Implement Deep Research API integration |
+| [#10](link) | Add additional LLM clients |
+
+**View all:** [v1.x issues](https://github.com/YOUR_REPO/issues?q=label%3Av1.x)
